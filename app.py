@@ -3,7 +3,7 @@ from flask import jsonify, make_response
 import sqlite3
 app = Flask(__name__)
 
-con = sqlite3.connect('db.sqlite', check_same_thread=False)
+con = sqlite3.connect('G:\leaderBoardAPI\db.sqlite', check_same_thread=False)
 
 def checkUsername(username):
     cur = con.cursor()
@@ -34,13 +34,23 @@ def getUserScore(username):
     cur = con.cursor()
     resp = cur.execute('''SELECT scores FROM user_scores WHERE username = ?''',(username,)).fetchall()
     cur.close()
-    return make_response(jsonify({username:resp[0][0]}))
-@app.rout('/getScores/<num>')
+    return make_response(jsonify({username:resp[0][0]}),200)
+@app.route('/getScores/<num>')
 def getScores(num):
     cur = con.cursor()
     res = cur.execute('''SELECT * FROM user_scores ORDER BY scores DESC LIMIT ?''',(num,)).fetchall()
+    cur.close()
+    return make_response(jsonify(res),200)
 
-    return make_response(jsonify(res))
+@app.route('/resetPlayer/<username>')
+def resetPlayer(username):
+    cur = con.cursor()
+    res = cur.execute('''DELETE FROM user_scores WHERE username = ?''', (username,)).fetchall()
+    cur.close()
+    if len(res) == 0:
+        return "OK"
+    else:
+        return "ERROR"
 
 if __name__ == '__main__':
     app.run()
