@@ -27,20 +27,35 @@ def createUsername(username):
         else:
             return "ERROR"
     else:
-        return make_response(jsonify({"free":"false"}),200)
+        return "ALREADY USED"
 
-@app.route('/getUserScore/<username>')
 def getUserScore(username):
     cur = con.cursor()
     resp = cur.execute('''SELECT scores FROM user_scores WHERE username = ?''',(username,)).fetchall()
     cur.close()
-    return make_response(jsonify({username:resp[0][0]}),200)
-@app.route('/getScores/<num>')
-def getScores(num):
+    return resp
+
+@app.route('/getScores')
+def getScores():
     cur = con.cursor()
-    res = cur.execute('''SELECT * FROM user_scores ORDER BY scores DESC LIMIT ?''',(num,)).fetchall()
+    res = cur.execute('''SELECT * FROM user_scores ORDER BY scores DESC ''',).fetchall()
     cur.close()
-    return make_response(jsonify(res),200)
+    string = ""
+    for i in res:
+        string += i[0]+"|"+str(i[1])+"\n"
+    return string
+
+
+@app.route('/uploadScore/<username>/<score>')
+def uploadScore(username,score):
+    cur = con.cursor()
+    current = getUserScore(username)
+    current = current[0]
+    if int(current[0]) < int(score):
+        res = cur.execute('''UPDATE user_scores set scores = ? WHERE username = ?''', (score,username))
+    con.commit()
+    cur.close()
+    return "OK"
 
 @app.route('/resetPlayer/<username>')
 def resetPlayer(username):
