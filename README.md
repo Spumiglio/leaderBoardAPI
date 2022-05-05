@@ -1,3 +1,3 @@
 # leaderBoardAPI
-Simple RESTFUL service to access a database
-Used to mamage a leaderboard in unity
+Simple RESTFUL service to access a database.
+Used to manage a leaderboard in unity
