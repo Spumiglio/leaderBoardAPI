@@ -38,7 +38,10 @@ def getUserScore(username):
     resp = cur.execute('''SELECT scores FROM user_scores WHERE username = ?''',(username,)).fetchall()
     cur.close()
     con.close()
-    return resp
+    string = ""
+    for i in resp:
+        string += i[0] + "|" + str(i[1]) + "\n"
+    return string
 
 @app.route('/getScores')
 def getScores():
